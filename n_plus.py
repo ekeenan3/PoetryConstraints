@@ -1,4 +1,3 @@
-
 # Takes the input and replaces each word with the word n entries after it in
 # the Merriam Webster dictionary. May later include options to maintain the part
 # of speech, different dictionaries, etc. Based on the Oulipo constraint n+7
@@ -44,7 +43,14 @@ def n_plus(n, words):
 
     # Add n to the index of each word in words
     for i in range(len(words)):
-        words[i] = word_list[word_list.index(words[i])+n]
+        new_index = word_list.index(words[i])+n
+        # If index is too large wrap around dictionary
+        if new_index >= len(word_list):
+            new_index -= len(word_list)
+        if new_index < 0:
+            new_index += len(word_list)
+
+        words[i] = word_list[new_index]
 
     return words
 
