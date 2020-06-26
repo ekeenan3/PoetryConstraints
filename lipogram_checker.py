@@ -134,7 +134,9 @@ def give_synonyms(words, letters):
     return synonym_list
 
 # Get input text and forbidden letter list
+print("Enter some text: ")
 text = input()
+print("Enter the letters that are forbidden seperated by spaces: ")
 letters = input().split(" ")
 
 # Get list of tuples with forbidden words and their part of speech
