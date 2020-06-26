@@ -6,6 +6,7 @@
 import re
 
 # Get input
+print("Enter some text: ")
 text_input = input()
 maintain_capital = True
 maintain_punctuation = True
@@ -31,26 +32,37 @@ def preprocess(text):
                 punctuation[i] = re.search("[^a-z]", words[i]).group(0)
 
     # Then remove punctuation
-    words = [re.search("[a-z]+", words[i]).group() for i in range(len(words))]
+    new_words = []
+    for i in range(len(words)):
+        result = re.search("[a-z]+", words[i])
+        if result is not None:
+            new_words.append(result.group())
+        else:
+            new_words.append("")
+    words = new_words
 
     return words, is_capital, punctuation
 
 def n_plus(n, words):
-    print(words)
     # Open and read wordlist
     f = open("data\wordlist.txt", "r")
     word_list = f.read().splitlines()
 
     # Add n to the index of each word in words
     for i in range(len(words)):
-        new_index = word_list.index(words[i])+n
-        # If index is too large wrap around dictionary
-        if new_index >= len(word_list):
-            new_index -= len(word_list)
-        if new_index < 0:
-            new_index += len(word_list)
+        try:
+            new_index = word_list.index(words[i])+n
 
-        words[i] = word_list[new_index]
+            # If index is too large wrap around dictionary
+            if new_index >= len(word_list):
+                new_index -= len(word_list)
+            if new_index < 0:
+                new_index += len(word_list)
+
+            words[i] = word_list[new_index]
+        except:
+            pass
+
 
     return words
 
@@ -78,4 +90,5 @@ words = n_plus(7, words)
 text_output = postprocess(words, is_capital, punctuation)
 
 # Return (print) the text output
+print("\nHere's that text n+7: ")
 print(text_output)
