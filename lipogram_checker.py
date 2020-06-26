@@ -1,16 +1,14 @@
 # Takes some input text and a list of letters that are not allowed. Finds any
 # words with letters that are not allowed, tags their part of speech, and
 # suggests synonyms that are of the same part of speech and do not contain the
-# forbidden letters.
+# forbidden letters. Also includes option for reverse lipogram.
 
 # Import nltk and specifically wordnets to find synonyms
 import nltk
 from nltk.corpus import wordnet as wn
 
-# test = "He told the fish to fish"
-# tokens = nltk.word_tokenize(test)
-# words_pos = nltk.pos_tag(tokens)
-# print(words_pos)
+# Change to get find reverse lipogram where each word must contain the letter(s)
+reverse = False
 
 # Finds words in text with forbidden letters and tags their parts of speech
 def process(text, letters):
@@ -21,7 +19,7 @@ def process(text, letters):
     forbidden_words = []
     for word in words:
         for letter in letters:
-            if letter in word:
+            if (letter in word and not reverse) or (letter not in word and reverse):
                 forbidden_words.append(word)
 
     # Tag the parts of speech of the words
@@ -119,15 +117,16 @@ def give_synonyms(words, letters):
         if word[1] != "OTHER":
             # Get list of synonyms of the same part of speech
             synset = wn.synsets(word[0],pos=word[1])
-            for lemma in synset[0].lemmas():
-                # Check word against each forbidden letter
-                allowed = True
-                for letter in letters:
-                    if letter in lemma.name():
-                        allowed = False
-                # Add synonym to list if it is allowed
-                if allowed:
-                    synonyms.append(lemma.name())
+            if(len(synset) > 0):
+                for lemma in synset[0].lemmas():
+                    # Check word against each forbidden letter
+                    allowed = True
+                    for letter in letters:
+                        if (letter in lemma.name() and not reverse) or (letter not in lemma.name() and reverse):
+                            allowed = False
+                    # Add synonym to list if it is allowed
+                    if allowed:
+                        synonyms.append(lemma.name())
         # Add list of synonyms to the list of lists of synonyms
         synonym_list.append(synonyms)
 
@@ -144,4 +143,7 @@ words_with_tags = process(text, letters)
 # Get list of lists of synonyms, one list for each forbidden word
 synonyms = give_synonyms(words_with_tags, letters)
 for i in range(len(words_with_tags)):
-    print(words_with_tags[i][0] + " uses a forbidden letter. Some possible synonyms that are allowed are: " + ", ".join(synonyms[i]))
+    if not reverse:
+        print(words_with_tags[i][0] + " uses a forbidden letter. Some possible synonyms that are allowed are: " + ", ".join(synonyms[i]))
+    else:
+        print(words_with_tags[i][0] + " does not have a required letter. Some possible synonyms that are allowed are: " + ", ".join(synonyms[i]))
