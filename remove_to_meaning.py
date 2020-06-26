@@ -9,8 +9,11 @@ import nltk
 import pickle
 import random
 
+# Seed randomness for patterns for showcasing
+random.seed(1035)
+
 # How many times to try sentence patterns before giving up
-tries = 100
+tries = 1000
 
 # Load sentence patterns
 f = open("models\sentence_patterns.pickle", "rb")
@@ -73,12 +76,14 @@ def apply_pattern(words_with_tags):
         # Find percent success
         success /= len(pattern)
         # Update best sentence
-        print(success)
         if success > best_success:
             best_sentence = sentence[1:]
             best_success = success
     return best_sentence
 
+print("Enter text, it's best if it doesn't have contractions or words with dashes: ")
 text = input()
 words_with_tags = process(text)
-print(apply_pattern(words_with_tags))
+print("\nHere are some sentences you could make by deleting words from the input: ")
+for i in range(5):
+    print(apply_pattern(words_with_tags))
